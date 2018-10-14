@@ -1,0 +1,46 @@
+{
+  "dependencies": {
+    "async": "^2.5.0",
+    "body-parser": "^1.18.2",
+    "config": "^2.0.1",
+    "express": "^4.16.2",
+    "gdax": "^0.8.0",
+    "request": "^2.88.0",
+    "slack-node": "^0.1.8",
+    "telegraf": "^3.24.1",
+    "terminal-kit": "^1.14.3",
+    "twilio": "^3.17.5",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb-base": "^11.3.2",
+    "eslint-plugin-import": "^2.7.0",
+    "istanbul": "1.1.0-alpha.1",
+    "mocha": "^5.2.0",
+    "sinon": "^1.17.7"
+  },
+  "license": "MIT",
+  "homepage": "https://instabot42.github.io/",
+  "keywords": [
+    "Bitcoin",
+    "Bitfinex",
+    "Deribit",
+    "Coinbase",
+    "Trading"
+  ],
+  "description": "Auto trading and alerting",
+  "author": {
+    "name": "Instabot"
+  },
+  "main": "src/index.js",
+  "name": "instabot-trader",
+  "scripts": {
+    "start": "node src/index.js",
+    "setup": "cp -n config/default.json config/local.json || true",
+    "test": "mocha",
+    "watch": "mocha --watch",
+    "coverage": "./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -u exports"
+  }
+}

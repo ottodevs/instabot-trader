@@ -1,0 +1,55 @@
+{
+  "credentials": [
+    {
+      "name": "deribit",
+      "key": "api-key",
+      "secret": "api-secret"
+    },
+    {
+      "name": "bitfinex",
+      "key": "api-key",
+      "secret": "api-secret"
+    },
+    {
+      "name": "coinbase",
+      "endpoint": "https://api.pro.coinbase.com",
+      "key": "api-key",
+      "secret": "api-secret",
+      "passphrase": "secret-passphrase"
+    }
+  ],
+  "sms": {
+    "from": "123",
+    "to": "123",
+    "twilio": {
+      "key": "api-key",
+      "secret": "api-secret"
+    }
+  },
+  "slack": {
+    "webhook": ""
+  },
+  "telegram": {
+    "botToken": "",
+    "shortcuts": [
+      { "name": "example", "message": "This is an example message"}
+    ]
+  },
+  "notifications": {
+    "default": [ "sms" ],
+    "alertOnStartup": false
+  },
+  "server": {
+    "url": "/trade",
+    "port": 3000,
+    "logLevel": 2
+  },
+  "macros": [
+    {
+      "name": "ping",
+      "actions": [
+        "notify(msg=pong);"
+      ]
+    }
+  ]
+}
