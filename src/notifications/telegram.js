@@ -57,7 +57,7 @@ class TelegramNotifier {
      */
     isSafeUser(userId) {
         // no restrictions
-        if (!this.safeUser || this.safeUser === '') {
+        if (!this.safeUser || this.safeUser === '' || this.safeUser === 0) {
             return true;
         }
 
