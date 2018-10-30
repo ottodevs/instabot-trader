@@ -6,7 +6,7 @@ const logger = log.logger;
 
 
 /**
- * Bitfinex version of the exchange
+ * Coinbase version of the exchange
  */
 class Coinbase extends Exchange {
     /**
@@ -16,9 +16,6 @@ class Coinbase extends Exchange {
     constructor(credentials) {
         super(credentials);
         this.name = 'coinbase';
-
-        // Add all the commands we support
-        this.addCommands(['limitOrder', 'marketOrder', 'cancelOrders', 'ticker', 'accountWalletBalances']);
 
         // start up any sockets or create API handlers here.
         this.api = new CoinbaseApi(credentials.key, credentials.secret, credentials.passphrase, credentials.endpoint);

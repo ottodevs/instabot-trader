@@ -95,6 +95,59 @@ class ExchangeManager {
     }
 
     /**
+     * Parse the individual arguments in the function
+     * @param params
+     * @returns {Array}
+     */
+    parseArguments(params) {
+        // Break the arguments up into each individual argument
+        const argList = [];
+        const splitByComma = new Fregex();
+        splitByComma.forEach(/([^,]+?\"[^\"]+\")|([^,]+)/g, params, (m, i) => {
+            argList.push(m[0].trim());
+        });
+
+        // then work out the named values etc
+        const res = [];
+        argList.forEach((item, i) => {
+            const splitValues = /^(([a-zA-Z]+)\s*=\s*(("([^"]*)")|"?(.+)"?))|(.+)$/;
+            const m = splitValues.exec(item);
+            if (m) {
+                if (m[7]) {
+                    // this is the plain argument case (no named arguments)
+                    const quotes = /^"(.*)"$/.exec(m[7]);
+                    const value = quotes ? quotes[1] : m[7];
+                    res.push({ name: '', value, index: i });
+                } else if (m[6]) {
+                    res.push({ name: m[2], value: m[6], index: i });
+                } else if (m[5]) {
+                    res.push({ name: m[2], value: m[5], index: i });
+                }
+            }
+        });
+
+        return res;
+    }
+
+    /**
+     * Helper to parse all the actions and return an array of what needs to be done
+     * @param commands
+     * @returns {Array}
+     */
+    parseActions(commands) {
+        const actions = [];
+        const regex = new Fregex();
+        regex.forEach(/([a-z]+)\(([\s\S]*?)\)/gi, commands, (m) => {
+            actions.push({
+                name: m[1].trim(),
+                params: this.parseArguments(m[2].trim()),
+            });
+        });
+
+        return actions;
+    }
+
+    /**
      * Executes a list of commands on an exchange
      * @param exchange
      * @param symbol
@@ -118,7 +171,7 @@ class ExchangeManager {
             logger.notice('================================\n');
 
             // Break up the commands into actions, and execute them in series
-            const actions = exchange.parseActions(commands);
+            const actions = this.parseActions(commands);
             return async.eachSeries(actions, (action, next) => {
                 this.executeCommand(exchange, symbol, action.name, action.params, session)
                     .then(() => next())
@@ -157,7 +210,7 @@ class ExchangeManager {
      */
     commandBlocks(msg, cb) {
         const regex = new Fregex();
-        regex.forEach(/([a-z]+)\(([\s\S]*?)\)\s*{([\s\S]*?)}/gi, msg, (m) => {
+        regex.forEach(/([a-z]+)\(([^()]*?)\)\s*{([\s\S]*?)}/gi, msg, (m) => {
             // Extract the parts
             const exchangeName = m[1].trim().toLowerCase();
             const symbol = m[2].trim();

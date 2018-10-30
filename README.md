@@ -15,18 +15,6 @@ Docs are at [http://instabot42.github.io/](http://instabot42.github.io/)
 
 Find me on [Whalepool.io](http://whalepool.io/) teamspeak
 
-## All donations gratefully accepted! 👊 
-
-If you're using this to help you trade 24/7, it would be great if you could throw me a few Satoshi 
-from time to time to say thanks. 
-
-* Bitcoin: 39vBjyAu65vYEd7thnW75V7eULTcz7wgxV
-* Litecoin: LUov5izfzuDakBeLGGCtyzmZcwCB2nXBDY
-* Eth: 0x2F18958381D3a1025e136b5AEF727dDa132602f8
- 
-Thanks!
-
-
 ## Basic setup
 
 Really, go look at the proper docs at [http://instabot42.github.io/](http://instabot42.github.io/).
@@ -55,6 +43,18 @@ To run the tests (either once, or continuously)...
 npm run test
 npm run watch
 ```
+
+## All donations gratefully accepted! 
+
+If you're using this to help you trade 24/7, it would be great if you could throw me a few Satoshi 
+from time to time to say thanks. 
+
+* Bitcoin: 39vBjyAu65vYEd7thnW75V7eULTcz7wgxV
+* Litecoin: LUov5izfzuDakBeLGGCtyzmZcwCB2nXBDY
+* Eth: 0x2F18958381D3a1025e136b5AEF727dDa132602f8
+ 
+Thanks!
+
 
 ## License
 

@@ -45,7 +45,7 @@ class DeribitApi extends ApiInterface {
             request(requestOptions, (error, response, body) => {
                 const t1 = Date.now();
                 const duration = (t1 - t0).toFixed(3);
-                logger.dim(`${requestOptions.method} to ${requestOptions.url} took ${duration}ms`);
+                logger.debug(`${requestOptions.method} to ${requestOptions.url} took ${duration}ms`);
 
                 if (error) {
                     logger.error('Error calling Deribit API');
@@ -164,15 +164,17 @@ class DeribitApi extends ApiInterface {
      * Makes an Auth request to the API
      * @param action
      * @param params
+     * @param methodOrderride
      * @returns {*}
      */
-    makeAuthRequest(action, params) {
+    makeAuthRequest(action, params, methodOrderride) {
         // var headers, key, nonce, path, payload, signature, url, value
         if (!this.key || !this.secret) {
             return Promise.reject(new Error('missing api key or secret'));
         }
 
-        const method = action.startsWith('/api/v1/public') ? 'GET' : 'POST';
+        let method = action.startsWith('/api/v1/public') ? 'GET' : 'POST';
+        method = methodOrderride || method;
         const args = method === 'GET' ? `?${this.objectToString(params)}` : '';
 
         const url = `${this.url}${action}${args}`;
@@ -238,7 +240,7 @@ class DeribitApi extends ApiInterface {
             instrument: symbol.toUpperCase(),
             type: 'limit',
             quantity: String(util.roundDown(amount, 0)),
-            price: String(price),
+            price: String(util.round(price * 2, 0) / 2),
             time_in_force: 'good_till_cancel',
             post_only: true,
         };
@@ -317,6 +319,24 @@ class DeribitApi extends ApiInterface {
                 return resolve(result);
             });
         });
+    }
+
+    /**
+     * Get order info
+     * @param order
+     * @returns {PromiseLike<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}> | Promise<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}>}
+     */
+    order(order) {
+        return this.makeAuthRequest('/api/v1/private/orderstate', { orderId: order.orderId }, 'GET')
+            .then(o => ({
+                id: o.orderId,
+                side: o.direction,
+                amount: o.quantity,
+                remaining: o.quantity - o.filledQuantity,
+                executed: o.filledQuantity,
+                is_filled: o.quantity === o.filledQuantity,
+                is_open: o.state === 'open',
+            }));
     }
 
     /**

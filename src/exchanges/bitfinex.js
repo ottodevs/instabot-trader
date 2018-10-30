@@ -17,9 +17,6 @@ class Bitfinex extends Exchange {
         super(credentials);
         this.name = 'bitfinex';
 
-        // Add all the commands we support
-        this.addCommands(['limitOrder', 'marketOrder', 'cancelOrders']);
-
         // start up any sockets or create API handlers here.
         this.api = new BitfinexApiv1(credentials.key, credentials.secret);
     }

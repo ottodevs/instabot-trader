@@ -49,7 +49,7 @@ class BitfinexApiv1 extends ApiInterface {
             request(requestOptions, (error, response, body) => {
                 const t1 = Date.now();
                 const duration = (t1 - t0).toFixed(3);
-                logger.dim(`${requestOptions.method} to ${requestOptions.url} took ${duration}ms`);
+                logger.debug(`${requestOptions.method} to ${requestOptions.url} took ${duration}ms`);
 
                 if (error) {
                     logger.error('Error calling Bitfinex API v1');
@@ -66,7 +66,7 @@ class BitfinexApiv1 extends ApiInterface {
 
                 // Dump the output of the API call
                 if (response && response.statusCode !== 200) {
-                    logger.error('Error calling Bitfinex API v1');
+                    logger.error(`Error calling Bitfinex API v1 - ${requestOptions.url}`);
                     logger.error(`Status Code: ${response.statusCode}\n`);
                     try {
                         const json = JSON.parse(body);
@@ -283,6 +283,28 @@ class BitfinexApiv1 extends ApiInterface {
         };
 
         return this.makeAuthRequest('order/cancel/multi', params);
+    }
+
+    /**
+     * Get order info
+     * @param orderInfo
+     * @returns {PromiseLike<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}> | Promise<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}>}
+     */
+    order(orderInfo) {
+        const params = {
+            order_id: orderInfo.id,
+        };
+
+        return this.makeAuthRequest('order/status', params)
+            .then(order => ({
+                id: order.id,
+                side: order.side,
+                amount: parseFloat(order.original_amount),
+                remaining: parseFloat(order.remaining_amount),
+                executed: parseFloat(order.executed_amount),
+                is_filled: parseFloat(order.remaining_amount) === 0,
+                is_open: !order.is_cancelled,
+            }));
     }
 }
 

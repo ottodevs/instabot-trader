@@ -1,14 +1,13 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const config = require('config');
-const log = require('./common/logger');
+const logger = require('./common/logger').logger;
 const ExchangeManager = require('./exchanges/manager');
 const allExchanges = require('./exchanges/all');
 const notifier = require('./notifications/notifier');
 const allNotifiers = require('./notifications/all');
 
 // Set up the logger
-const logger = log.logger;
 logger.setLevel(config.get('server.logLevel'));
 
 const startTime = new Date();
@@ -34,6 +33,10 @@ const port = parseInt(config.get('server.port'), 10);
 // middleware to decode the query params in the request
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: false }));
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+});
 
 // Create the exchange manager
 const manager = new ExchangeManager(allExchanges);

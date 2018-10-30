@@ -59,6 +59,15 @@ class ApiInterface {
     cancelOrders(orders) {
         return Promise.reject(new Error('Not implemented'));
     }
+
+    /**
+     * Find out about a specific order
+     * @param orderId
+     * @returns {PromiseLike<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}> | Promise<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}>}
+     */
+    order(orderId) {
+        return Promise.reject(new Error('Not implemented'));
+    }
 }
 
 module.exports = ApiInterface;

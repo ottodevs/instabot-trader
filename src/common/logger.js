@@ -28,6 +28,16 @@ class Logger {
     }
 
     /**
+     * Log a response (typically shown dimmed)
+     * @param msg
+     */
+    debug(msg) {
+        if (this.level >= Debug) {
+            term.gray(`${Logger.toMsg(msg)}\n`);
+        }
+    }
+
+    /**
      * For info about something. same as notice()
      * @param msg
      */
@@ -78,7 +88,7 @@ class Logger {
      * @param msg
      */
     log(msg) {
-        if (this.level >= Debug) {
+        if (this.level >= Info) {
             term.brightYellow(`${Logger.toMsg(msg)}\n`);
         }
     }
@@ -88,7 +98,7 @@ class Logger {
      * @param msg
      */
     logResponse(msg) {
-        if (this.level >= Debug) {
+        if (this.level >= Info) {
             term.gray(`${Logger.toMsg(msg)}\n`);
         }
     }

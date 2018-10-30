@@ -1,11 +1,10 @@
-const log = require('../common/logger');
+const logger = require('../common/logger').logger;
 const util = require('../common/util');
 const Exchange = require('./exchange');
 const DeribitApi = require('../apis/deribit');
-const notifier = require('../notifications/notifier');
 
-const logger = log.logger;
-
+const scaledOrderSize = require('./support/scaled_order_size_contracts');
+const balance = require('./commands/balance_deribit');
 
 /**
  * Deribit version of the exchange
@@ -18,14 +17,19 @@ class Deribit extends Exchange {
     constructor(credentials) {
         super(credentials);
         this.name = 'deribit';
-        this.minOrderSize = 1;
 
-        // Add all the commands we support
-        this.addCommands(['limitOrder', 'marketOrder', 'cancelOrders']);
+        this.minOrderSize = 1;
+        this.minPollingDelay = 0;
+        this.maxPollingDelay = 10;
 
         // start up any sockets or create API handlers here.
         this.api = new DeribitApi(credentials.key, credentials.secret);
+
+        // override a couple of the default features
+        this.support.scaledOrderSize = scaledOrderSize;
+        this.commands.balance = balance;
     }
+
 
     /**
      * Handle shutdown
@@ -55,27 +59,8 @@ class Deribit extends Exchange {
             total: 0,
             available: 0,
             isAllAvailable: false,
-            orderSize: util.roundDown(amount.value, 0),
+            orderSize: util.round(amount.value, 0),
         });
-    }
-
-    /**
-     * Replace the base class implementation to handle the fact we don't really
-     * have the same concept of 'available funds` on Deribit.
-     * @param symbol
-     * @param params - from scaled order
-     * @returns {Promise<*>}
-     */
-    async scaledOrderSize(symbol, params) {
-        // need to have at least 1 contract per order
-        if (params.amount.units === '') {
-            if ((params.amount.value / params.orderCount) < this.minOrderSize) {
-                return 0;
-            }
-        }
-
-        // Order what you like, leverage will adjust
-        return params.amount.value;
     }
 
     /**
@@ -104,26 +89,6 @@ class Deribit extends Exchange {
             const change = util.roundDown(parseInt(targetPosition, 10) - positionSize, 0);
 
             return { side: change < 0 ? 'sell' : 'buy', amount: { value: Math.abs(change), units: '' } };
-        });
-    }
-
-
-    /**
-     * Report account details
-     * @param symbol
-     * @param args
-     * @param session
-     * @returns {Promise<string>}
-     */
-    balance(symbol, args, session) {
-        logger.progress('NOTIFY ACCOUNT BALANCE');
-
-        return this.api.account().then((account) => {
-            const msg = `Deribit: Equity: ${util.roundDown(account.equity, 4)} btc, ` +
-                `available: ${util.roundDown(account.availableFunds, 4)} btc, ` +
-                `balance: ${util.roundDown(account.balance, 4)} btc, pnl: ${util.roundDown(account.PNL, 4)} btc.`;
-            notifier.send(msg);
-            logger.results(msg);
         });
     }
 }

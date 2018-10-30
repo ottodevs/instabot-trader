@@ -22,7 +22,7 @@ describe('Order Size Calculations', () => {
         mock.expects('ticker').once().returns(Promise.resolve(expected));
 
         // call it
-        const orderBook = await exchange.ticker('BTCUSD', [], 'test');
+        const orderBook = await exchange.support.ticker({ ex: exchange, symbol: 'BTCUSD' });
         assert.equal(orderBook, expected);
     });
 
@@ -54,7 +54,7 @@ describe('Order Size Calculations', () => {
         mock.expects('walletBalances').once().returns(Promise.resolve(expected));
 
         // call it
-        const orderBook = await exchange.accountWalletBalances('BTCUSD');
+        const orderBook = await exchange.support.accountBalances({ ex: exchange, symbol: 'BTCUSD' });
         assert.deepEqual(orderBook, expected);
     });
 
@@ -119,7 +119,7 @@ describe('Order Size Calculations', () => {
         mock.expects('walletBalances').once().returns(Promise.resolve(response));
 
         // call it
-        const orderBook = await exchange.accountWalletBalances('BTCUSD');
+        const orderBook = await exchange.support.accountBalances({ ex: exchange, symbol: 'BTCUSD' });
         assert.deepEqual(orderBook, expected);
     });
 

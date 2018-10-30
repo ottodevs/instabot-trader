@@ -40,7 +40,7 @@ describe('limit Orders', async () => {
         const expected = { };
 
         // Try and buy 2 when there is enough to do that.
-        const order = await exchange.limitOrder('BTCUSD', args, 'test-session');
+        const order = await exchange.commands.limitOrder({ ex: exchange, symbol: 'BTCUSD', session: 'test-session' }, args);
         sinon.assert.notCalled(mock.expects('limitOrder'));
         assert.deepEqual(order, expected);
     });
@@ -104,7 +104,7 @@ describe('limit Orders', async () => {
         ];
 
         // Try and buy 2 when there is enough to do that.
-        const order = await exchange.limitOrder('BTCUSD', args, 'test-session');
+        const order = await exchange.commands.limitOrder({ ex: exchange, symbol: 'BTCUSD', session: 'test-session' }, args);
         sinon.assert.notCalled(mock.expects('limitOrder'));
         assert.deepEqual(order, expected);
     });

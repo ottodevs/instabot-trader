@@ -36,7 +36,7 @@ class Coinbase extends ApiInterface {
             const currentTime = Date.now();
             const waitBeforeCall = this.nextCallAt > currentTime ? (this.nextCallAt - currentTime) + 1 : 1;
             this.nextCallAt = currentTime + waitBeforeCall + this.minTimeBetweenCalls;
-            if (waitBeforeCall > 1) logger.dim(`Rate limiting myself by waiting ${waitBeforeCall}ms`);
+            if (waitBeforeCall > 1) logger.debug(`Rate limiting myself by waiting ${waitBeforeCall}ms`);
 
             setTimeout(() => resolve(), waitBeforeCall);
         });
@@ -169,6 +169,25 @@ class Coinbase extends ApiInterface {
                 return resolve();
             });
         });
+    }
+
+    /**
+     * Get order info
+     * @param orderInfo
+     * @returns {PromiseLike<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}> | Promise<{id: *, side: *, amount: number, remaining: number, executed: number, is_filled: boolean}>}
+     */
+    order(orderInfo) {
+        return this.rateLimit()
+            .then(() => this.authClient.getOrder(orderInfo.id))
+            .then(order => ({
+                id: order.id,
+                side: order.side,
+                amount: parseFloat(order.size),
+                remaining: parseFloat(order.size) - parseFloat(order.filled_size),
+                executed: parseFloat(order.filled_size),
+                is_filled: parseFloat(order.size) === parseFloat(order.filled_size),
+                is_open: order.status !== 'open',
+            }));
     }
 }
 

@@ -109,7 +109,7 @@ describe('Position Size validation', async () => {
             easing: 'linear' };
 
         // Try and buy 2 when there is enough to do that.
-        const amount = await exchange.scaledOrderSize('BTCUSD', params);
+        const amount = await exchange.support.scaledOrderSize({ ex: exchange, symbol: 'BTCUSD' }, params);
         assert.equal(amount, 1);
     });
 
@@ -137,7 +137,7 @@ describe('Position Size validation', async () => {
             easing: 'linear' };
 
         // Try and buy 2 when there is enough to do that.
-        const amount = await exchange.scaledOrderSize('BTCUSD', params);
+        const amount = await exchange.support.scaledOrderSize({ ex: exchange, symbol: 'BTCUSD' }, params);
         assert.equal(amount, 0.8);
     });
 
@@ -158,14 +158,14 @@ describe('Position Size validation', async () => {
         mock.expects('walletBalances').once().returns(Promise.resolve(wallet));
 
         const params = { side: 'sell',
-            amount: { value: 0.009, units: '' },
+            amount: { value: 0.005, units: '' },
             orderCount: 10,
             from: 10,
             to: 100,
             easing: 'linear' };
 
         // Try and buy 2 when there is enough to do that.
-        const amount = await exchange.scaledOrderSize('BTCUSD', params);
+        const amount = await exchange.support.scaledOrderSize({ ex: exchange, symbol: 'BTCUSD' }, params);
         assert.equal(amount, 0);
     });
 
@@ -193,7 +193,7 @@ describe('Position Size validation', async () => {
             easing: 'linear' };
 
         // Try and buy 2 when there is enough to do that.
-        const amount = await exchange.scaledOrderSize('BTCUSD', params);
+        const amount = await exchange.support.scaledOrderSize({ ex: exchange, symbol: 'BTCUSD' }, params);
         assert.equal(amount, 1);
     });
 
@@ -221,7 +221,7 @@ describe('Position Size validation', async () => {
             easing: 'linear' };
 
         // Try and buy 2 when there is enough to do that.
-        const amount = await exchange.scaledOrderSize('BTCUSD', params);
+        const amount = await exchange.support.scaledOrderSize({ ex: exchange, symbol: 'BTCUSD' }, params);
         assert.equal(amount, 0.545454);
     });
 

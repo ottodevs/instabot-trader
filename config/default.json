@@ -43,14 +43,6 @@
   "server": {
     "url": "/trade",
     "port": 3000,
-    "logLevel": 2
-  },
-  "macros": [
-    {
-      "name": "ping",
-      "actions": [
-        "notify(msg=pong);"
-      ]
-    }
-  ]
+    "logLevel": 1
+  }
 }

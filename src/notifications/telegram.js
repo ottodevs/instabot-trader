@@ -97,7 +97,7 @@ class TelegramNotifier {
             'Command Reference: [https://instabot42.github.io/#api-Command_Reference](https://instabot42.github.io/#api-Command_Reference)\n\n' +
             '*Example Message*\n' +
             '```\n' +
-            'bitfinex(BTCUSD) { notify(what=position); }\n' +
+            'bitfinex(BTCUSD) { balance(); }\n' +
             '```\n\n' +
             '`/help` - This message\n' +
             '`/list` - List all the shortcuts defined in your config.\n' +
