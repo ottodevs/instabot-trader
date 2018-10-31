@@ -2,6 +2,7 @@ const uuid = require('uuid/v4');
 const timesSeries = require('async').timesSeries;
 const logger = require('../../../common/logger').logger;
 const util = require('../../../common/util');
+const scaledAmounts = require('../../../common/scaled_amounts');
 
 /**
  * Place a series of market orders at intervals
@@ -16,6 +17,7 @@ module.exports = async (context, args) => {
         orderCount: '10',
         duration: '60s',
         position: '',
+        varyAmount: '0',
         tag: 'twap',
     }, args);
 
@@ -23,12 +25,9 @@ module.exports = async (context, args) => {
     logger.progress(`STEPPED MARKET ORDER - ${ex.name}`);
     logger.progress(p);
 
-    // get the values as numbers
-    p.orderCount = parseInt(p.orderCount, 10);
-
-    // clamp them into range
-    if (p.orderCount < 1) p.orderCount = 1;
-    if (p.orderCount > 50) p.orderCount = 50;
+    // get the values as numbers (clamped into range)
+    p.orderCount = Math.max(Math.min(parseInt(p.orderCount, 10), 100), 2);
+    p.varyAmount = ex.parsePercentage(p.varyAmount);
     if (p.duration < 1) p.duration = 1;
 
     // Work out how long to wait between each order (in ms)
@@ -46,8 +45,8 @@ module.exports = async (context, args) => {
     p.amount = modifiedPosition.amount;
 
     // figure out how big each order needs to be
-    const perOrderSize = util.roundDown(p.amount.value / p.orderCount, 6);
-    p.amount = `${perOrderSize}${p.amount.units}`;
+    const precision = 6;
+    const amounts = scaledAmounts(p.orderCount, p.amount.value, p.varyAmount, precision);
 
     // Log the algo order, so it can be cancelled
     const id = uuid();
@@ -63,7 +62,7 @@ module.exports = async (context, args) => {
             // Work out the settings to place a limit order
             const marketOrderArgs = [
                 { name: 'side', value: p.side, index: 0 },
-                { name: 'amount', value: p.amount, index: 1 },
+                { name: 'amount', value: `${amounts[i]}${p.amount.units}`, index: 1 },
             ];
 
             // Place the order

@@ -1,7 +1,7 @@
 const timesSeries = require('async').timesSeries;
 const logger = require('../../../common/logger').logger;
-const util = require('../../../common/util');
-const EasingFunction = require('../../../common/easing');
+const scaledAmounts = require('../../../common/scaled_amounts');
+const scaledPrices = require('../../../common/scaled_prices');
 
 
 /**
@@ -15,10 +15,12 @@ module.exports = async (context, args) => {
     const p = ex.assignParams({
         from: '0',
         to: '50',
-        orderCount: '20',
+        orderCount: '10',
         amount: '0',
         side: 'buy',
         easing: 'linear',
+        varyAmount: '0',
+        varyPrice: '0',
         tag: '',
         position: '',
     }, args);
@@ -27,10 +29,10 @@ module.exports = async (context, args) => {
     logger.progress(`SCALED ORDER - ${ex.name}`);
     logger.progress(p);
 
-    // get the values as numbers
-    p.orderCount = parseInt(p.orderCount, 10);
-    if (p.orderCount < 1) p.orderCount = 1;
-    if (p.orderCount > 50) p.orderCount = 50;
+    // get the order count as a number (clamped from 1 to 100)
+    p.orderCount = Math.max(Math.min(parseInt(p.orderCount, 10), 100), 2);
+    p.varyAmount = ex.parsePercentage(p.varyAmount);
+    p.varyPrice = ex.parsePercentage(p.varyPrice);
 
     // Figure out the size of each order
     const modifiedPosition = await ex.positionToAmount(symbol, p.position, p.side, p.amount);
@@ -54,21 +56,20 @@ module.exports = async (context, args) => {
         return Promise.resolve({});
     }
 
+    // Get an array of amounts
+    const amounts = scaledAmounts(p.orderCount, p.amount.value, p.varyAmount);
+    const prices = scaledPrices(p.orderCount, p.from, p.to, p.varyPrice, p.easing);
+
     logger.progress('Adjusted values based on Available Funds');
     logger.progress(p);
-
-    // figure out how big each order needs to be
-    const perOrderSize = util.roundDown(p.amount.value / p.orderCount, 6);
-    p.amount = `${perOrderSize}${p.amount.units}`;
 
     // map the amount to a scaled amount (amount / steps, but keep units (eg %))
     return new Promise((resolve, reject) => timesSeries(p.orderCount, async (i) => {
         // Work out the settings to place a limit order
-        const price = util.round(EasingFunction(p.from, p.to, i / (p.orderCount - 1), p.easing), 2);
         const limitOrderArgs = [
             { name: 'side', value: p.side, index: 0 },
-            { name: 'offset', value: `@${price}`, index: 1 },
-            { name: 'amount', value: p.amount, index: 2 },
+            { name: 'offset', value: `@${prices[i]}`, index: 1 },
+            { name: 'amount', value: `${amounts[i]}${p.amount.units}`, index: 2 },
             { name: 'tag', value: p.tag, index: 3 },
         ];
 

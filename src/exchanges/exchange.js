@@ -236,6 +236,22 @@ class Exchange {
     }
 
     /**
+     * Treat a number as a number or percentage. (0.01 or 1% both return 0.01)
+     * @param value
+     * @returns {number}
+     */
+    parsePercentage(value) {
+        const regex = /^([0-9]+(\.[0-9]+)?)\s*(%{1,2})?$/;
+        const m = regex.exec(value);
+        if (m) {
+            return parseFloat(m[1]) * (m[3] === '%' ? 0.01 : 1);
+        }
+
+        // Does not look like a valid quantity, so treat it as zero, as that is safest
+        return 0;
+    }
+
+    /**
      * Support for named params
      * @param expected - map of expected values, with default {name: default}
      * @param named - the input argument list

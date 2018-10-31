@@ -31,7 +31,7 @@ function scaledPrices(orderCount, from, to, randomDiff = 0, easingFunction = 'li
     const scaleFactor = range / max;
 
     // scale the steps into the range and map them into the range from-to
-    return randomised.map(entry => util.round(from + (entry * scaleFactor), 2));
+    return randomised.map(entry => util.round(from + (entry * scaleFactor), 4));
 }
 
 
