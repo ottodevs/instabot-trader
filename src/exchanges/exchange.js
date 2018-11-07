@@ -2,16 +2,19 @@ const logger = require('../common/logger').logger;
 const util = require('../common/util');
 
 // Fetch the commands we support
-const wait = require('./commands/wait');
 const icebergOrder = require('./commands/algo/iceberg_order');
 const scaledOrder = require('./commands/algo/scaled_order');
 const twapOrder = require('./commands/algo/twap_order');
+const pingPongOrder = require('./commands/algo/ping_pong');
+
 const limitOrder = require('./commands/orders/limit_order');
 const marketOrder = require('./commands/orders/market_order');
 const stopMarketOrder = require('./commands/orders/stop_market_order');
 const cancelOrders = require('./commands/cancel_orders');
+
 const notify = require('./commands/notify');
 const balance = require('./commands/balance');
+const wait = require('./commands/wait');
 
 // and some support functions
 const scaledOrderSize = require('./support/scaled_order_size');
@@ -51,7 +54,9 @@ class Exchange {
             icebergOrder,
             scaledOrder,
             twapOrder,
-            steppedMarketOrder: twapOrder, // duplicate using legacy name
+            pingPongOrder,
+            steppedMarketOrder: twapOrder,  // duplicate using legacy name
+            accDisOrder: icebergOrder,      // duplicate for common names
 
             // Regular orders
             limitOrder,
@@ -66,7 +71,7 @@ class Exchange {
         };
 
         this.commandWhiteList = [
-            'scaledOrder', 'twapOrder', 'steppedMarketOrder', 'icebergOrder',
+            'scaledOrder', 'twapOrder', 'steppedMarketOrder', 'icebergOrder', 'pingPongOrder',
             'limitOrder', 'marketOrder', 'stopMarketOrder',
             'cancelOrders', 'wait', 'macro', 'notify', 'balance'];
     }

@@ -163,7 +163,7 @@ class Coinbase extends ApiInterface {
                 this.rateLimit()
                     .then(() => this.authClient.cancelOrder(order.id))
                     .then(() => next())
-                    .catch(err => next(err));
+                    .catch(err => next());
             }, (err) => {
                 if (err) { return reject(err); }
                 return resolve();

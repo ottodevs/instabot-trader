@@ -28,7 +28,7 @@ module.exports = async (context, args) => {
     const modifiedPosition = await ex.positionToAmount(symbol, params.position, params.side, params.amount);
     if (modifiedPosition.amount.value === 0) {
         logger.results('limit order not placed, as order size is Zero.');
-        return Promise.resolve({});
+        return Promise.resolve({ order: null });
     }
 
     // Capture the modified size and direction information
@@ -47,5 +47,11 @@ module.exports = async (context, args) => {
     ex.addToSession(session, params.tag, order);
     logger.results('Limit order placed.');
     logger.dim(order);
-    return order;
+    return {
+        order,
+        side,
+        price: orderPrice,
+        amount: details.orderSize,
+        units: '',
+    };
 };

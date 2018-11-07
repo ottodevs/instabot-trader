@@ -85,7 +85,9 @@ module.exports = async (context, args) => {
                     { name: 'amount', value: `${amount}`, index: 1 },
                     { name: 'offset', value: `@${orderPrice}`, index: 2 },
                 ];
-                activeOrder = await ex.executeCommand(symbol, 'limitOrder', orderParams, session);
+                const order = await ex.executeCommand(symbol, 'limitOrder', orderParams, session);
+
+                activeOrder = order.order;
                 waitTime = ex.minPollingDelay;
                 isSuspended = false;
             } else {

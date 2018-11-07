@@ -27,6 +27,9 @@ class DeribitApi extends ApiInterface {
         // Keep hold of the API key and secret
         this.key = key;
         this.secret = secret;
+
+        // whole numbers of contracts only...
+        this.precision = 0;
     }
 
     /**
@@ -314,7 +317,7 @@ class DeribitApi extends ApiInterface {
         return new Promise((resolve, reject) => {
             async.eachSeries(orders, (order, next) => this.makeAuthRequest('/api/v1/private/cancel', { orderId: order.orderId })
                 .then(() => next())
-                .catch(err => next(err)), (err, result) => {
+                .catch(err => next()), (err, result) => {
                 if (err) return reject(err);
                 return resolve(result);
             });

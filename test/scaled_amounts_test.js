@@ -26,4 +26,8 @@ describe('Scaled Amounts', () => {
         assert.isBelow(min, 2);
         assert.isAbove(max, 2);
     });
+
+    it('can handle rounding', () => {
+        assert.deepEqual(scaledAmounts(3, 100, 0, 0), [33, 34, 33]);
+    });
 });

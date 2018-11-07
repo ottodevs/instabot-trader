@@ -1,6 +1,15 @@
 
 class ApiInterface {
     /**
+     *
+     * @param key
+     * @param secret
+     */
+    constructor(key, secret) {
+        this.precision = 6;
+    }
+
+    /**
      * Get the ticker for a symbol
      * @param symbol
      * @returns {*}

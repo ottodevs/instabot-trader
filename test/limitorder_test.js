@@ -37,7 +37,7 @@ describe('limit Orders', async () => {
             { name: 'amount', value: '0', index: 2 },
         ];
 
-        const expected = { };
+        const expected = { order: null };
 
         // Try and buy 2 when there is enough to do that.
         const order = await exchange.commands.limitOrder({ ex: exchange, symbol: 'BTCUSD', session: 'test-session' }, args);
@@ -106,6 +106,9 @@ describe('limit Orders', async () => {
         // Try and buy 2 when there is enough to do that.
         const order = await exchange.commands.limitOrder({ ex: exchange, symbol: 'BTCUSD', session: 'test-session' }, args);
         sinon.assert.notCalled(mock.expects('limitOrder'));
-        assert.deepEqual(order, expected);
+        assert.deepEqual(order.order, expected);
+        assert.equal(order.price, 6440);
+        assert.equal(order.side, 'buy');
+        assert.equal(order.amount, 1);
     });
 });
